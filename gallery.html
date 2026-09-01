@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Meetup Photos — Foul Weather Warriors</title>
+<meta name="description" content="Photos from Foul Weather Warriors meetups — cookouts, coffee mornings, and days on the water. Every event free to attend." />
+<meta name="theme-color" content="#e8813c" />
+<link rel="icon" href="images/logo-mark.png" type="image/png" />
+<link rel="apple-touch-icon" href="images/logo-mark.png" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Foul Weather Warriors" />
+<meta property="og:title" content="Meetup Photos — Foul Weather Warriors" />
+<meta property="og:description" content="Photos from where we have already been." />
+<meta property="og:image" content="images/og-card.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow+Condensed:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ============================ NAV ============================ -->
+<nav class="site-nav">
+  <a class="logo" href="index.html">
+    <img class="logo-mark" src="images/logo-mark.png" alt="" width="128" height="128" />
+    <span class="logo-text"><span>Foul Weather</span> <b>Warriors</b></span>
+  </a>
+  <div class="nav-right">
+    <a class="btn btn-primary" href="index.html#donate" data-donate>Donate</a>
+    <button class="hamburger" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ============================ DRAWER ============================ -->
+<div class="nav-overlay" id="nav-overlay"></div>
+
+<aside class="drawer" id="drawer" aria-label="Site menu">
+  <div class="drawer-head">
+    <span>Menu</span>
+    <button class="drawer-close" id="drawer-close" aria-label="Close menu">&times;</button>
+  </div>
+
+  <nav class="drawer-links" aria-label="Main">
+    <a href="index.html">Home</a>
+    <a href="index.html#different">What Makes Us Different</a>
+    <a href="gallery.html" aria-current="page">Meetup Photos</a>
+    <a href="index.html#app">22-LIFE App</a>
+    <a href="index.html#partners">Partners</a>
+    <a href="index.html#donate">Donate</a>
+  </nav>
+
+  <div class="drawer-cta">
+    <a class="btn btn-ghost" href="index.html#donate" data-donate>Support the Mission</a>
+  </div>
+
+  <div class="drawer-foot">
+    <div class="socials" data-socials></div>
+  </div>
+</aside>
+
+<main id="main">
+
+  <!-- ============================ PAGE HEAD ============================ -->
+  <section class="band">
+    <div class="wrap center">
+      <p class="eyebrow">The archive</p>
+      <h1 class="section-title">Meetup Photos</h1>
+      <p class="section-intro">
+        Every cookout, coffee morning, and day on the water. All of it free to attend,
+        all of it built on the same idea: show up, sit down, stay in touch.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================ ALBUMS ============================ -->
+  <section class="band band--tint">
+    <div class="wrap">
+      <div id="albums"></div>
+      <noscript>
+        <p class="empty-state">
+          Turn on JavaScript to browse the photo albums.
+        </p>
+      </noscript>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="footer-legal">
+      Foul Weather Warriors Foundation is a 501(c)(3) nonprofit organization. EIN <span data-ein></span>.<br />
+      &copy; <span data-year></span> Foul Weather Warriors Foundation. All rights reserved.
+    </p>
+
+    <div class="socials" data-socials></div>
+  </div>
+</footer>
+
+<!-- ============================ LIGHTBOX ============================ -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lb-btn lb-close" id="lb-close" aria-label="Close photo viewer">&times;</button>
+  <button class="lb-btn lb-prev"  id="lb-prev"  aria-label="Previous photo">&#8249;</button>
+  <button class="lb-btn lb-next"  id="lb-next"  aria-label="Next photo">&#8250;</button>
+  <figure>
+    <img id="lb-img" src="" alt="" />
+    <figcaption id="lb-caption"></figcaption>
+  </figure>
+</div>
+
+<script src="site-data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

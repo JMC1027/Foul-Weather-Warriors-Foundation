@@ -1,0 +1,25 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/
+
+# OneDrive conflict copies
+*-Conflict.*
+*~$*
+
+# Never commit credentials. This site needs none — everything in
+# site-data.js is public information that ships to the browser anyway.
+*.env
+.env*
+*secret*
+*Secret*
+*credentials*
+*.pem
+*.key
+
+# Local build/test scratch
+node_modules/
+.netlify/

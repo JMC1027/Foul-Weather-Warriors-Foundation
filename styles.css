@@ -1,0 +1,948 @@
+/* ============================================================================
+   FOUL WEATHER WARRIORS
+   Single stylesheet for index.html and gallery.html
+   ----------------------------------------------------------------------------
+   1.  Tokens              8.  Events
+   2.  Reset & base        9.  Gallery + lightbox
+   3.  Layout utilities    10. Donate
+   4.  Buttons             11. Contact
+   5.  Nav + drawer        12. Crisis strip
+   6.  Hero                13. Footer
+   7.  Section bits        14. Responsive + reduced motion
+   ========================================================================== */
+
+
+/* ---------------------------------------------------------------- 1. Tokens */
+:root {
+  --bg:         #0b141a;   /* storm slate — page base */
+  --bg-deep:    #060d12;   /* darkest gradient stop */
+  --surface:    #12202a;   /* cards */
+  --surface-2:  #0e1a22;   /* alternating section bands */
+  --surface-3:  #16262f;   /* raised / hover */
+
+  --accent:     #e8813c;   /* signal orange */
+  --accent-lt:  #f5a765;
+  --accent-dk:  #b85f22;
+
+  --text:       #ffffff;
+  --muted:      #8b9aa6;
+  --border:     rgba(232, 129, 60, 0.22);
+  --border-soft:rgba(255, 255, 255, 0.09);
+  --danger:     #d1483a;
+
+  /* Section tint that fades in and out at its own edges, so a band never
+     steps hard against the body gradient behind it. */
+  --tint-soft: linear-gradient(180deg,
+                 rgba(255, 255, 255, 0)     0%,
+                 rgba(255, 255, 255, 0.032) 14%,
+                 rgba(255, 255, 255, 0.032) 86%,
+                 rgba(255, 255, 255, 0)     100%);
+
+  --radius:     10px;
+  --radius-lg:  16px;
+  --shadow:     0 18px 50px rgba(0, 0, 0, 0.55);
+
+  --wrap:       1100px;
+  --pad-x:      1.5rem;
+  --band-y:     clamp(2.75rem, 6vw, 4.5rem);
+
+  --font-display: 'Oswald', 'Arial Narrow', system-ui, sans-serif;
+  --font-body:    'Barlow Condensed', 'Segoe UI', system-ui, sans-serif;
+}
+
+
+/* ------------------------------------------------------- 2. Reset and base */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+  /* keeps anchored sections clear of the sticky nav */
+  scroll-padding-top: 5rem;
+}
+
+body {
+  margin: 0;
+  /* sticky footer: short pages still push the footer to the bottom */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: 1.075rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 78% -8%, rgba(232, 129, 60, 0.11), transparent 58%),
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 42%, #0d1920 100%) fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.nav-open { overflow: hidden; }
+
+main { flex: 1 0 auto; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1.08;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.75rem;
+}
+
+p { margin: 0 0 1rem; }
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--accent); text-decoration: none; transition: color 0.18s; }
+a:hover { color: var(--accent-lt); }
+
+/* height:auto is required — without it the width/height attributes on <img>
+   win over the CSS width and the image renders letterboxed in an oversized box. */
+img { max-width: 100%; height: auto; display: block; }
+
+ul { margin: 0; padding: 0; list-style: none; }
+
+:focus-visible {
+  outline: 3px solid var(--accent-lt);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  padding: 0.7rem 1.2rem;
+  background: var(--accent);
+  color: #10202a;
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.skip-link:focus { left: 0.5rem; top: 0.5rem; color: #10202a; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* -------------------------------------------------- 3. Layout utilities */
+.band {
+  padding: var(--band-y) var(--pad-x);
+}
+.band--tint { background: var(--tint-soft); }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; }
+.wrap--narrow { max-width: 760px; }
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+  margin: 0 0 0.7rem;
+}
+
+.section-title {
+  font-size: clamp(1.75rem, 4vw, 2.6rem);
+  letter-spacing: 0.045em;
+  margin-bottom: 0.6rem;
+}
+
+.section-intro {
+  color: var(--muted);
+  font-size: 1.1rem;
+  max-width: 60ch;
+  margin-bottom: 2rem;
+}
+
+.center { text-align: center; }
+.center .section-intro { margin-left: auto; margin-right: auto; }
+
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.7rem;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.card h3 {
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+  color: var(--text);
+}
+.card p { color: var(--muted); margin: 0; }
+.card--lift:hover,
+.card--lift:focus-within {
+  transform: translateY(-3px);
+  border-color: rgba(232, 129, 60, 0.55);
+  background: var(--surface-3);
+}
+
+/* Visible flag for any unfilled TODO in site-data.js */
+.todo-flag {
+  display: inline-block;
+  padding: 0.1em 0.55em;
+  border: 1px dashed var(--danger);
+  border-radius: 4px;
+  background: rgba(209, 72, 58, 0.14);
+  color: #ff9b8f;
+  font-family: var(--font-display);
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+
+/* -------------------------------------------------------------- 4. Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.62rem 1.35rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.18s, color 0.18s, border-color 0.18s;
+  white-space: nowrap;
+}
+
+.btn-primary { background: var(--accent); border-color: var(--accent); color: #10202a; }
+.btn-primary:hover { background: var(--accent-lt); border-color: var(--accent-lt); color: #10202a; transform: translateY(-1px); }
+
+.btn-ghost { background: transparent; border-color: var(--accent); color: var(--accent); }
+.btn-ghost:hover { background: var(--accent); color: #10202a; transform: translateY(-1px); }
+
+.btn-quiet { background: transparent; border-color: var(--border-soft); color: var(--text); }
+.btn-quiet:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-lg { padding: 0.85rem 1.9rem; font-size: 1.05rem; }
+
+
+/* -------------------------------------------------------- 5. Nav + drawer */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem clamp(1rem, 3vw, 1.75rem);
+  background: rgba(11, 20, 26, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  min-width: 0;              /* lets the nav shrink instead of overflowing */
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.6vw, 1.35rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.05;
+  color: var(--text);
+}
+.logo:hover { color: var(--text); }
+.logo-text { display: flex; align-items: baseline; gap: 0.45rem; min-width: 0; }
+.logo-text span { white-space: nowrap; }
+.logo b { color: var(--accent); font-weight: 700; white-space: nowrap; }
+
+/* The emblem is a round coin on an opaque dark square — clipping to a circle
+   drops the corners so it sits cleanly on the nav bar. */
+.logo-mark {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 50%;
+  align-self: center;
+}
+
+.nav-right { display: flex; align-items: center; gap: 0.75rem; flex: none; }
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0 9px;
+  background: none;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.18s;
+}
+.hamburger:hover { border-color: var(--accent); }
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform 0.25s, opacity 0.2s, background 0.2s;
+}
+.hamburger:hover span { background: var(--accent); }
+.hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* visibility flips instantly on open (0s, no delay) so the panel is focusable
+   right away, and is delayed on close so the fade/slide can finish first.
+   Transitioning visibility over a duration instead makes .focus() a no-op. */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.28s, visibility 0s 0.28s;
+}
+.nav-overlay.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.28s, visibility 0s 0s;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  width: min(300px, 84vw);
+  height: 100%;
+  padding: 1.5rem 1.5rem 2rem;
+  background: var(--bg-deep);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.3s ease, visibility 0s 0.3s;
+  overflow-y: auto;
+}
+.drawer.open {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform 0.3s ease, visibility 0s 0s;
+}
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1.1rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+.drawer-head span {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+
+.drawer-close {
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s;
+}
+.drawer-close:hover { border-color: var(--accent); color: var(--accent); }
+
+.drawer-links { display: flex; flex-direction: column; gap: 0.15rem; }
+.drawer-links a {
+  display: block;
+  padding: 0.75rem 0.6rem;
+  border-radius: var(--radius);
+  border-left: 3px solid transparent;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  transition: color 0.18s, background 0.18s, border-color 0.18s, padding-left 0.18s;
+}
+.drawer-links a:hover {
+  color: var(--accent);
+  background: rgba(232, 129, 60, 0.08);
+  border-left-color: var(--accent);
+  padding-left: 0.9rem;
+}
+.drawer-links a[aria-current="page"] { color: var(--accent); border-left-color: var(--accent); }
+
+.drawer-cta { margin-top: 1.5rem; }
+.drawer-cta .btn { width: 100%; }
+
+.drawer-foot { margin-top: auto; padding-top: 1.75rem; }
+.drawer-foot .socials { justify-content: flex-start; }
+
+
+/* ----------------------------------------------------------------- 6. Hero */
+.hero { padding: clamp(2.5rem, 6vw, 5rem) var(--pad-x); }
+
+.hero-inner {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  align-items: center;
+}
+
+.hero h1 {
+  font-size: clamp(2.6rem, 7vw, 4.4rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.35rem;
+}
+.hero h1 .accent { color: var(--accent); display: block; }
+
+
+.hero-sub {
+  max-width: 46ch;
+  font-size: 1.15rem;
+  color: var(--muted);
+  margin-bottom: 1.6rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1.25rem;
+}
+
+.badge {
+  flex: none;
+  padding: 0.3rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(232, 129, 60, 0.07);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-lt);
+}
+
+.hero-visual img {
+  width: 100%;
+  max-width: 460px;
+  margin-left: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* Emblem variant: no card framing — clip the coin to a circle and float it on
+   a soft glow so it reads as a mark rather than a photo in a box. */
+.hero-visual--logo img {
+  max-width: 420px;
+  border-radius: 50%;
+  border: none;
+  box-shadow:
+    0 0 0 1px rgba(232, 129, 60, 0.28),
+    0 24px 70px rgba(0, 0, 0, 0.65),
+    0 0 90px rgba(232, 129, 60, 0.12);
+}
+
+
+/* -------------------------------------------------------- 7. Section bits */
+
+
+
+
+.empty-state {
+  padding: 2.5rem 1.5rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+  text-align: center;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+
+/* ---------------------------------------------------- 9. Gallery + lightbox */
+
+/* Album section on gallery.html */
+.album { margin-bottom: clamp(2.5rem, 5vw, 3.75rem); }
+.album:last-child { margin-bottom: 0; }
+
+.album-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem 1rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+.album-head h2 { margin: 0; font-size: clamp(1.35rem, 3vw, 1.85rem); }
+.album-meta {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--muted);
+}
+.album-blurb { color: var(--muted); margin: -0.5rem 0 1.25rem; max-width: 66ch; }
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 300px));
+  justify-content: center;
+  gap: 0.75rem;
+}
+.photo-grid .shot { aspect-ratio: 4 / 3; }
+
+/* A single clickable thumbnail */
+.shot {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  cursor: zoom-in;
+  transition: transform 0.18s, border-color 0.18s;
+}
+.shot img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.35s, opacity 0.18s; }
+.shot:hover { transform: translateY(-3px); border-color: var(--accent); }
+.shot:hover img { transform: scale(1.05); opacity: 0.9; }
+
+/* Lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgba(4, 9, 12, 0.94);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s, visibility 0s 0.25s;
+}
+.lightbox.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.25s, visibility 0s 0s;
+}
+
+.lightbox figure {
+  margin: 0;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+.lightbox img {
+  max-width: 100%;
+  max-height: 76vh;
+  width: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.lightbox figcaption {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--muted);
+  text-align: center;
+}
+
+.lb-btn {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(11, 20, 26, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.lb-btn:hover { background: var(--accent); border-color: var(--accent); color: #10202a; }
+.lb-close { top: clamp(0.75rem, 3vw, 1.75rem); right: clamp(0.75rem, 3vw, 1.75rem); }
+.lb-prev  { left:  clamp(0.5rem, 2vw, 1.5rem); top: 50%; transform: translateY(-50%); }
+.lb-next  { right: clamp(0.5rem, 2vw, 1.5rem); top: 50%; transform: translateY(-50%); }
+.lb-prev:hover, .lb-next:hover { transform: translateY(-50%); }
+
+
+/* --------------------------------------------------------------- 10. Donate */
+.donate-band {
+  /* the glow is centred inside the band, not pinned to its top edge, so it
+     falls off before it reaches the boundary instead of starting hard */
+  background:
+    radial-gradient(ellipse 78% 62% at 50% 48%, rgba(232, 129, 60, 0.13), transparent 72%),
+    var(--tint-soft);
+}
+.donate-band .section-title { margin-bottom: 0.9rem; }
+
+
+/* -------------------------------------------------------------- 11. Contact */
+
+.socials { display: flex; justify-content: center; gap: 0.7rem; }
+.socials a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  color: var(--muted);
+  transition: color 0.18s, border-color 0.18s, transform 0.18s, background 0.18s;
+}
+.socials a:hover {
+  color: #10202a;
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.socials svg { width: 20px; height: 20px; }
+
+
+
+
+/* --------------------------------------------------------------- 13. Footer */
+.site-footer {
+  padding: 2rem var(--pad-x) 1.75rem;
+  /* fades into the darker footer instead of starting on a hard edge */
+  background: linear-gradient(180deg, rgba(6, 13, 18, 0) 0%, var(--bg-deep) 18%);
+  text-align: center;
+}
+
+
+
+.footer-legal {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+
+/* ------------------------------------------------ 13b. Setup checklist panel
+   Only rendered while site-data.js still contains TODO values. It removes
+   itself automatically once everything is filled in. */
+.setup-panel {
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 140;
+  width: min(330px, calc(100vw - 2rem));
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 0.9rem 1rem 1rem;
+  background: var(--bg-deep);
+  border: 1px solid rgba(209, 72, 58, 0.5);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.setup-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+.setup-head strong {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #ff9b8f;
+}
+.setup-close {
+  flex: none;
+  width: 26px; height: 26px;
+  background: none;
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.setup-close:hover { color: var(--text); border-color: var(--accent); }
+
+.setup-panel ul {
+  list-style: disc;
+  padding-left: 1.1rem;
+  margin: 0 0 0.7rem;
+  color: var(--muted);
+}
+.setup-panel li { margin-bottom: 0.25rem; }
+.setup-panel p { margin: 0; color: var(--muted); font-size: 0.87rem; }
+.setup-panel code {
+  padding: 0.05em 0.35em;
+  border-radius: 4px;
+  background: rgba(232, 129, 60, 0.14);
+  color: var(--accent-lt);
+  font-size: 0.95em;
+}
+
+@media (max-width: 560px) {
+  .setup-panel { left: 0.5rem; right: 0.5rem; bottom: 0.5rem; width: auto; max-height: 45vh; }
+}
+
+
+/* ------------------------------------- 14. Responsive + motion preferences */
+@media (max-width: 860px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .hero-sub { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
+  .hero-wordmark { align-items: center; }
+  .hw-sub { justify-content: center; }
+  .hero-visual { order: -1; }
+  .hero-visual img { max-width: 380px; margin: 0 auto; }
+  .story-quote { text-align: left; }
+}
+
+@media (max-width: 560px) {
+  body { font-size: 1.03rem; }
+
+  /* stack the wordmark so the nav never forces the page wider than the screen */
+  .logo { flex-direction: column; align-items: flex-start; gap: 0; font-size: 1rem; }
+
+  .nav-right .btn { padding: 0.55rem 0.95rem; font-size: 0.85rem; }
+  .hero-actions .btn { width: 100%; }
+  .photo-grid  { grid-template-columns: repeat(auto-fit, minmax(140px, 180px)); }
+  .lb-prev, .lb-next { width: 42px; height: 42px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .card--lift:hover, .shot:hover, .btn:hover { transform: none; }
+  .shot:hover img { transform: none; }
+}
+
+
+
+
+/* ------------------------------------- 16. Founder-spec sections (Aug 2026) */
+
+/* Hero wordmark. Stacked the way the organization's own patch and merch set it:
+   FOUL WEATHER over a large WARRIORS over a wide-tracked FOUNDATION. */
+.hero-wordmark {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: normal;
+}
+.hw-top {
+  font-size: clamp(1.05rem, 3.1vw, 1.85rem);
+  font-weight: 600;
+  letter-spacing: 0.17em;
+  color: var(--text);
+}
+.hw-main {
+  font-size: clamp(2.9rem, 8.6vw, 5.2rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: 0.015em;
+  color: var(--accent);
+}
+.hw-sub {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.hw-sub-text {
+  font-size: clamp(0.92rem, 2.3vw, 1.4rem);
+  /* wide tracking to match the width of WARRIORS above it; the negative
+     margin cancels the trailing space letter-spacing adds after the
+     last letter, so the badge sits at the right distance */
+  letter-spacing: 0.4em;
+  margin-right: -0.4em;
+}
+
+/* "The mission comes first." */
+.donate-line {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.6vw, 1.45rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text);
+  margin: -0.75rem 0 1.75rem;
+}
+
+/* "What makes us different" closing statement */
+.pledge {
+  max-width: 34ch;
+  margin: 0 auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.8vw, 1.6rem);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.3;
+  color: var(--text);
+}
+.pledge em { color: var(--accent); font-style: normal; }
+
+/* App store badges */
+.app-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+.app-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: #000;
+  color: var(--text);
+  transition: border-color 0.18s, transform 0.18s;
+}
+.app-badge:hover { border-color: var(--accent); color: var(--text); transform: translateY(-2px); }
+.app-badge svg { width: 24px; height: 24px; flex: none; }
+.app-badge span { display: flex; flex-direction: column; line-height: 1.1; text-align: left; }
+.app-badge small {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.app-badge strong {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Partners & donors */
+.partner-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-bottom: 1.75rem;
+}
+.partner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px;
+  padding: 1rem 1.5rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  transition: border-color 0.18s, transform 0.18s, background 0.18s;
+}
+a.partner:hover {
+  border-color: var(--accent);
+  background: rgba(232, 129, 60, 0.07);
+  color: var(--text);
+  transform: translateY(-3px);
+}
+.partner img { max-height: 52px; width: auto; }
+
+.partners-thanks {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin: 0;
+}
+
+/* The 22-LIFE heading is the app icon. Rounded like an app icon on a home
+   screen, which reads as deliberate rather than as a stray black square. */
+.app-logo-heading { margin: 0 0 1.1rem; }
+.app-logo-heading img {
+  width: clamp(88px, 20vw, 116px);
+  height: auto;
+  margin: 0 auto;
+  border-radius: 23%;
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.55);
+}
+
+/* Social icons sit below the copyright line in the footer */
+.site-footer .socials { margin-top: 1.35rem; }

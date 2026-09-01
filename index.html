@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Foul Weather Warriors Foundation — We Fight Isolation</title>
+<meta name="description" content="Foul Weather Warriors Foundation is a 501(c)(3) fighting veteran suicide by fighting isolation — reconnection, community, and direct action for veterans and service members." />
+<meta name="theme-color" content="#e8813c" />
+<link rel="icon" href="images/logo-mark.png" type="image/png" />
+<link rel="apple-touch-icon" href="images/logo-mark.png" />
+
+<!-- Social sharing. TODO: replace the URL and image once the domain is live. -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Foul Weather Warriors" />
+<meta property="og:title" content="Foul Weather Warriors Foundation" />
+<meta property="og:description" content="We fight veteran suicide by fighting isolation. Through reconnection, community, and direct action, we bring veterans and service members back together." />
+<!-- TODO: once you have a domain, make this an absolute URL
+     (e.g. https://yourdomain.org/images/og-card.jpg) — Facebook ignores relative paths -->
+<meta property="og:image" content="images/og-card.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow+Condensed:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ============================ NAV ============================ -->
+<nav class="site-nav">
+  <a class="logo" href="index.html">
+    <img class="logo-mark" src="images/logo-mark.png" alt="" width="128" height="128" />
+    <span class="logo-text"><span>Foul Weather</span> <b>Warriors</b></span>
+  </a>
+  <div class="nav-right">
+    <a class="btn btn-primary" href="#donate" data-donate>Donate</a>
+    <button class="hamburger" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ============================ DRAWER ============================ -->
+<div class="nav-overlay" id="nav-overlay"></div>
+
+<aside class="drawer" id="drawer" aria-label="Site menu">
+  <div class="drawer-head">
+    <span>Menu</span>
+    <button class="drawer-close" id="drawer-close" aria-label="Close menu">&times;</button>
+  </div>
+
+  <nav class="drawer-links" aria-label="Main">
+    <a href="index.html" aria-current="page">Home</a>
+    <a href="#different">What Makes Us Different</a>
+    <a href="gallery.html">Meetup Photos</a>
+    <a href="#app">22-LIFE App</a>
+    <a href="#partners">Partners</a>
+    <a href="#donate">Donate</a>
+  </nav>
+
+  <div class="drawer-cta">
+    <a class="btn btn-ghost" href="#donate" data-donate>Support the Mission</a>
+  </div>
+
+  <div class="drawer-foot">
+    <div class="socials" data-socials></div>
+  </div>
+</aside>
+
+<main id="main">
+
+  <!-- ============================ HERO ============================ -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <h1 class="hero-wordmark">
+          <span class="hw-top">Foul Weather</span>
+          <span class="hw-main">Warriors</span>
+          <span class="hw-sub">
+            <span class="hw-sub-text">Foundation</span>
+            <span class="badge">501(c)(3) Nonprofit</span>
+          </span>
+        </h1>
+        <p class="hero-sub">
+          We fight veteran isolation through reconnection, community, and direct action.
+          We bring veterans and service members back together.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="#donate" data-donate>Donate</a>
+        </div>
+      </div>
+      <div class="hero-visual hero-visual--logo">
+        <img src="images/logo.jpg" alt="Foul Weather Warriors Foundation emblem" width="760" height="760" loading="eager" />
+      </div>
+    </div>
+  </header>
+
+
+
+  <!-- ============================ DONATE ============================ -->
+  <section class="band band--tint donate-band" id="donate">
+    <div class="wrap wrap--narrow center">
+      <p class="eyebrow">Support the mission</p>
+      <h2 class="section-title">Where your donation goes</h2>
+      <p class="section-intro">
+        Your support funds free events, meetups, care packages, outdoor experiences,
+        and direct veteran support.
+      </p>
+      <p class="donate-line">The mission comes first.</p>
+      <!-- To embed a real donation form (Givebutter, Zeffy, Stripe), paste their
+           embed code directly below this comment and keep the button as a fallback.
+           The href here is used until CONFIG.donateUrl is set in site-data.js. -->
+      <a class="btn btn-primary btn-lg" href="#donate" data-donate>Donate</a>
+    </div>
+  </section>
+
+  <!-- ============================ WHAT MAKES US DIFFERENT ============================ -->
+  <section class="band" id="different">
+    <div class="wrap wrap--narrow center">
+      <p class="eyebrow">Our standard</p>
+      <h2 class="section-title">What makes us different</h2>
+      <p class="section-intro">
+        We care more about the men and women we serve than money, appearances,
+        or donor approval.
+      </p>
+      <p class="pledge">
+        Our veterans and active duty members are the mission, and we aim to lead
+        with <em>trust and confidence.</em>
+      </p>
+    </div>
+  </section>
+
+
+
+
+  <!-- ============================ 22-LIFE APP ============================ -->
+  <section class="band band--tint" id="app">
+    <div class="wrap wrap--narrow center">
+      <p class="eyebrow">Stay in the loop</p>
+      <!-- The heading is the app icon itself; the alt text keeps it a real
+           heading for screen readers and search engines. -->
+      <h2 class="section-title app-logo-heading">
+        <img src="images/22life-app-icon.png" alt="22-LIFE" width="320" height="320" />
+      </h2>
+      <p class="section-intro">
+        Download the 22-LIFE app for up-to-date information on FWWF meetups, free events,
+        contests, giveaways, and more.
+      </p>
+      <div class="app-badges">
+        <a class="app-badge" href="https://apps.apple.com/us/app/id6776245159"
+           target="_blank" rel="noopener" aria-label="Download 22-LIFE on the App Store">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.417 2.2-1.11 3.02-.836.99-2.2 1.75-3.32 1.66-.13-1.11.42-2.28 1.09-3.02.75-.83 2.06-1.46 3.34-1.66zM20.79 17.2c-.61 1.4-.9 2.02-1.68 3.26-1.09 1.72-2.62 3.86-4.52 3.88-1.69.02-2.12-1.1-4.41-1.09-2.29.01-2.77 1.11-4.46 1.09-1.9-.02-3.35-1.95-4.44-3.67C-1.05 17.5-.35 11.36 2.85 9.4c1.35-.83 2.79-.86 3.85-.86 1.11 0 2.61.94 4.43.94 1.77 0 2.85-.94 4.43-.94.94 0 2.55.11 3.9 1.17-3.42 1.87-2.86 6.75.33 8.49z"/></svg>
+          <span><small>Download on the</small><strong>App Store</strong></span>
+        </a>
+        <a class="app-badge" href="https://play.google.com/store/apps/details?id=com.life22.app"
+           target="_blank" rel="noopener" aria-label="Get 22-LIFE on Google Play">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 2.5v19a1 1 0 0 0 1.53.85l15.5-9.35a1 1 0 0 0 0-1.7L5.53 1.65A1 1 0 0 0 4 2.5z"/></svg>
+          <span><small>Get it on</small><strong>Google Play</strong></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ PARTNERS & DONORS ============================ -->
+  <section class="band" id="partners">
+    <div class="wrap center">
+      <p class="eyebrow">Standing with us</p>
+      <h2 class="section-title">Our partners &amp; donors</h2>
+      <p class="section-intro">
+        Our partners and donors help make the mission possible.
+      </p>
+      <div id="partners-grid" class="partner-grid"></div>
+      <p class="partners-thanks">Thank you for standing with FWWF.</p>
+    </div>
+  </section>
+
+
+
+
+</main>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="footer-legal">
+      Foul Weather Warriors Foundation is a 501(c)(3) nonprofit organization. EIN <span data-ein></span>.<br />
+      &copy; <span data-year></span> Foul Weather Warriors Foundation. All rights reserved.
+    </p>
+
+    <div class="socials" data-socials></div>
+  </div>
+</footer>
+
+
+<script src="site-data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
