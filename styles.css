@@ -416,38 +416,79 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 
 /* ----------------------------------------------------------------- 6. Hero */
-.hero { padding: clamp(2.5rem, 6vw, 5rem) var(--pad-x); }
+/* Full-bleed panel: a photo (or the storm gradient) fills the top of the page
+   and the donation card sits on top of it, left-aligned. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: min(760px, calc(100svh - 4.5rem));
+  padding: clamp(2.5rem, 6vw, 4.5rem) var(--pad-x);
+  overflow: hidden;
+}
+
+/* The backdrop and its scrim. CONFIG.heroImage sets background-image on this
+   element; with no photo set, the gradients below stand on their own. */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-color: var(--bg-deep);
+  background-position: center 28%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* No photo yet: a storm sky with the accent breaking through on the right,
+   so the hero reads as finished rather than as a missing image. */
+.hero-bg:not(.has-photo) {
+  background-image:
+    radial-gradient(ellipse 58% 54% at 70% 30%, rgba(232, 129, 60, 0.30), transparent 70%),
+    radial-gradient(ellipse 44% 38% at 88% 6%,  rgba(245, 167, 101, 0.17), transparent 72%),
+    radial-gradient(ellipse 85% 65% at 10% 94%, rgba(18, 34, 44, 0.92), transparent 72%),
+    linear-gradient(160deg, #162934 0%, #101e27 38%, var(--bg-deep) 100%);
+}
+
+/* Darkens the photo from the left so the card keeps its contrast no matter
+   what gets dropped in. The second layer lifts the bottom edge into the page. */
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(6, 13, 18, 0.93) 0%, rgba(6, 13, 18, 0.78) 34%,
+                           rgba(6, 13, 18, 0.30) 64%, rgba(6, 13, 18, 0.18) 100%),
+    linear-gradient(180deg, rgba(6, 13, 18, 0.55) 0%, transparent 28%,
+                            transparent 62%, var(--bg) 100%);
+}
+/* With no photo the side scrim would only mud up the gradient. */
+/* With no photo there is nothing to darken for legibility — only the bottom
+   edge needs to fall away into the page. */
+.hero-bg:not(.has-photo)::after {
+  background: linear-gradient(180deg, transparent 0%, transparent 62%, var(--bg) 100%);
+}
 
 .hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
   max-width: var(--wrap);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: clamp(1.75rem, 4vw, 3.5rem);
+  grid-template-columns: minmax(320px, 400px) 1fr;
+  gap: clamp(1.75rem, 5vw, 3.5rem);
   align-items: center;
 }
 
-.hero h1 {
-  font-size: clamp(2.6rem, 7vw, 4.4rem);
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  margin-bottom: 0.35rem;
-}
-.hero h1 .accent { color: var(--accent); display: block; }
-
+.hero-copy { min-width: 0; }
 
 .hero-sub {
   max-width: 46ch;
   font-size: 1.15rem;
-  color: var(--muted);
-  margin-bottom: 1.6rem;
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-bottom: 1.25rem;
+  color: #c3ced6;
+  margin-bottom: 0;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.7);
 }
 
 .badge {
@@ -462,27 +503,6 @@ ul { margin: 0; padding: 0; list-style: none; }
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--accent-lt);
-}
-
-.hero-visual img {
-  width: 100%;
-  max-width: 460px;
-  margin-left: auto;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-}
-
-/* Emblem variant: no card framing — clip the coin to a circle and float it on
-   a soft glow so it reads as a mark rather than a photo in a box. */
-.hero-visual--logo img {
-  max-width: 420px;
-  border-radius: 50%;
-  border: none;
-  box-shadow:
-    0 0 0 1px rgba(232, 129, 60, 0.28),
-    0 24px 70px rgba(0, 0, 0, 0.65),
-    0 0 90px rgba(232, 129, 60, 0.12);
 }
 
 
@@ -747,18 +767,28 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 
 /* ------------------------------------- 14. Responsive + motion preferences */
-@media (max-width: 860px) {
+@media (max-width: 980px) {
+  /* Wordmark first, donation card under it — the headline should land before
+     the ask on a phone. */
+  .hero {
+    min-height: 0;
+    align-items: flex-start;
+  }
   .hero-inner {
     grid-template-columns: 1fr;
+    justify-items: center;
     text-align: center;
   }
+  .hero-copy { order: -1; }
+  .give { width: 100%; max-width: 440px; text-align: left; }
   .hero-sub { margin-left: auto; margin-right: auto; }
-  .hero-actions { justify-content: center; }
   .hero-wordmark { align-items: center; }
   .hw-sub { justify-content: center; }
-  .hero-visual { order: -1; }
-  .hero-visual img { max-width: 380px; margin: 0 auto; }
   .story-quote { text-align: left; }
+  .hero-bg::after {
+    background: linear-gradient(180deg, rgba(6, 13, 18, 0.72) 0%, rgba(6, 13, 18, 0.82) 45%,
+                                        var(--bg) 100%);
+  }
 }
 
 @media (max-width: 560px) {
@@ -899,28 +929,52 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .partner {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 84px;
-  padding: 1rem 1.5rem;
+  gap: 0.9rem;
+  min-width: 240px;
+  padding: 1.5rem 1.75rem;
   border: 1px solid var(--border-soft);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.03);
   color: var(--text);
+  transition: border-color 0.18s, transform 0.18s, background 0.18s;
+}
+.partner:hover {
+  border-color: var(--accent);
+  background: rgba(232, 129, 60, 0.07);
+  transform: translateY(-3px);
+}
+
+/* Partner logos vary wildly in aspect ratio (M.O.S is square, Fuel 1 Team is
+   4.35:1). A fixed box with object-fit keeps every logo the same visual
+   footprint instead of the wide ones dwarfing the square ones. */
+.partner-logo {
+  width: 100%;
+  max-width: 200px;
+  height: 104px;
+  object-fit: contain;
+}
+
+/* fallback when a partner has no logo file */
+.partner-name {
   font-family: var(--font-display);
   font-size: 1.02rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  transition: border-color 0.18s, transform 0.18s, background 0.18s;
 }
-a.partner:hover {
-  border-color: var(--accent);
-  background: rgba(232, 129, 60, 0.07);
-  color: var(--text);
-  transform: translateY(-3px);
+
+.partner-link {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--accent);
 }
-.partner img { max-height: 52px; width: auto; }
+.partner-link:hover { color: var(--accent-lt); text-decoration: underline; }
 
 .partners-thanks {
   font-family: var(--font-display);
@@ -946,3 +1000,453 @@ a.partner:hover {
 
 /* Social icons sit below the copyright line in the footer */
 .site-footer .socials { margin-top: 1.35rem; }
+
+
+/* ============================================================================
+   17. Donation panel, partner belt, and donation window  (Sept 2026)
+   ========================================================================== */
+
+/* ------------------------------------------------- 17a. Nav links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.nav-links a {
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  transition: color 0.18s, background 0.18s;
+}
+.nav-links a:hover { color: var(--accent); background: rgba(232, 129, 60, 0.09); }
+
+/* A menu item with nowhere to go yet: dimmed, not clickable, tagged. */
+.nav-links a.is-soon,
+.drawer-links a.is-soon {
+  color: var(--muted);
+  cursor: default;
+}
+.nav-links a.is-soon:hover,
+.drawer-links a.is-soon:hover {
+  color: var(--muted);
+  background: none;
+  border-left-color: transparent;
+  padding-left: 0.6rem;
+}
+.soon-tag {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1em 0.5em;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.62em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  vertical-align: middle;
+  color: var(--accent);
+}
+
+/* Below the breakpoint the drawer already carries these links. */
+@media (max-width: 860px) { .nav-links { display: none; } }
+
+
+/* ------------------------------------------------- 17b. Donation panel */
+.give {
+  align-self: center;
+  width: 100%;
+  padding: 1.5rem 1.5rem 1.35rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  /* Semi-opaque over the photo rather than solid, so the backdrop still reads
+     through the card the way it does through a glass panel. */
+  background: rgba(14, 26, 34, 0.92);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  box-shadow: var(--shadow);
+}
+
+/* --- frequency tabs --- */
+.give-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1.15rem;
+}
+.give-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.62rem 0.5rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  cursor: pointer;
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+.give-tab:hover { color: var(--text); border-color: var(--accent); }
+.give-tab[aria-selected="true"] {
+  color: var(--text);
+  border-color: var(--accent);
+  background: rgba(232, 129, 60, 0.13);
+}
+.give-heart { width: 15px; height: 15px; flex: none; color: var(--accent); }
+
+.give-pitch {
+  margin: 0 0 1.15rem;
+  font-size: 1.02rem;
+  line-height: 1.45;
+  color: #c3ced6;
+}
+
+/* --- amount buttons: three across, two rows, like the reference --- */
+.give-amounts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.give-amount {
+  padding: 0.6rem 0.25rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, transform 0.15s;
+}
+.give-amount:hover { border-color: var(--accent); background: rgba(232, 129, 60, 0.09); }
+.give-amount[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: rgba(232, 129, 60, 0.18);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* --- custom amount row --- */
+.give-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.03);
+  transition: border-color 0.18s;
+}
+.give-custom:focus-within { border-color: var(--accent); }
+.give-cur {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.give-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.25rem 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.give-input:focus { outline: none; }
+/* the spinners crowd a field this size and add nothing here */
+.give-input::-webkit-outer-spin-button,
+.give-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.give-input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.give-usd {
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+/* --- dedicate --- */
+.give-check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.95rem 0 0;
+  font-size: 0.98rem;
+  color: #c3ced6;
+  cursor: pointer;
+}
+.give-check input {
+  width: 17px;
+  height: 17px;
+  flex: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.give-check:hover { color: var(--text); }
+
+.give-dedication { margin-top: 0.7rem; }
+.give-input--text {
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.03);
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  font-weight: 400;
+}
+.give-input--text:focus { outline: none; border-color: var(--accent); }
+.give-input--text::placeholder { color: var(--muted); }
+.give-hint { margin: 0.4rem 0 0; font-size: 0.86rem; color: var(--muted); }
+
+.give-submit { width: 100%; margin-top: 1.1rem; }
+
+.give-note {
+  margin: 0.8rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--muted);
+}
+
+
+/* ------------------------------------------------- 17c. Impact stats */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1.25rem;
+  margin: 0 0 2.25rem;
+}
+.stat {
+  padding: 1.35rem 1rem;
+  border-top: 2px solid var(--accent);
+  background: rgba(255, 255, 255, 0.02);
+}
+.stat-figure {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(2.3rem, 6vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+}
+.stat-label {
+  display: block;
+  margin-top: 0.6rem;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+
+/* ------------------------------------------------- 17d. Partner belt */
+/* Breaks out of the band's side padding so the strip runs the full width,
+   and fades at both ends so logos enter and leave instead of being cut. */
+.marquee {
+  position: relative;
+  margin: 0 calc(var(--pad-x) * -1) 1.75rem;
+  padding: 0.5rem 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* The track holds the partner list twice over. Sliding it exactly half its
+   own width lands copy 2 where copy 1 started, so the loop has no seam. */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 0;
+  animation: marquee-slide var(--marquee-duration, 40s) linear infinite;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track { animation-play-state: paused; }
+
+@keyframes marquee-slide {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* Nothing to loop yet — one short copy would visibly restart, so hold still. */
+.marquee--static .marquee-track {
+  animation: none;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Each copy is its own flex row so the track holds exactly two children of
+   equal width, which is what makes the -50% slide line up. */
+.marquee-copy {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+
+.marquee-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 230px;
+  height: 128px;
+  padding: 0 1.5rem;
+}
+.marquee-item .partner-logo {
+  max-width: 100%;
+  max-height: 96px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  /* Logos arrive in every colour there is. Muting them to the page and
+     lighting them up on hover keeps the belt from turning into confetti. */
+  opacity: 0.72;
+  filter: grayscale(100%) contrast(0.95) brightness(1.25);
+  transition: opacity 0.22s, filter 0.22s, transform 0.22s;
+}
+.marquee-item a { display: flex; align-items: center; justify-content: center; height: 100%; }
+.marquee-item a:hover .partner-logo,
+.marquee-item a:focus-visible .partner-logo {
+  opacity: 1;
+  filter: none;
+  transform: scale(1.04);
+}
+.marquee-item .partner-name {
+  color: var(--muted);
+  text-align: center;
+  transition: color 0.22s;
+}
+.marquee-item a:hover .partner-name { color: var(--accent); }
+
+
+/* ------------------------------------------------- 17e. Donation window */
+.give-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.75rem, 3vw, 2rem);
+  background: rgba(3, 8, 11, 0.82);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.22s;
+}
+.give-modal.open { opacity: 1; }
+/* display:flex above outranks the browser's own rule for [hidden], so the
+   closed window would stay on screen without this. */
+.give-modal[hidden] { display: none; }
+
+.give-modal-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 100%);
+  max-height: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.give-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: none;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+.give-modal-title {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+}
+.give-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s;
+}
+.give-modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+.give-modal-recap {
+  flex: none;
+  margin: 0;
+  padding: 0.7rem 1.25rem;
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(232, 129, 60, 0.08);
+  font-size: 0.95rem;
+  color: #c3ced6;
+}
+.give-modal-recap b { color: var(--accent); font-weight: 600; }
+.give-modal-recap:empty { display: none; }
+
+/* The donation platform renders on a white page, so the frame keeps its own
+   light background rather than flashing dark bars while it loads. */
+.give-modal-frame {
+  flex: 1 1 auto;
+  min-height: min(620px, 70vh);
+  background: #fff;
+}
+.give-modal-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: min(620px, 70vh);
+  border: 0;
+}
+
+.give-modal-foot {
+  flex: none;
+  margin: 0;
+  padding: 0.7rem 1.25rem;
+  border-top: 1px solid var(--border-soft);
+  text-align: center;
+  font-size: 0.88rem;
+}
+
+
+/* ------------------------------------------------- 17f. Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  /* The global rule higher up collapses every animation to 0.01ms, which would
+     snap the belt straight to its end position and hide half the logos. Stop
+     it outright and let the strip be scrolled by hand instead. */
+  .marquee-track { animation: none !important; transform: none !important; }
+  .marquee { overflow-x: auto; scrollbar-width: thin; }
+  .give-amount:hover, .app-badge:hover { transform: none; }
+}

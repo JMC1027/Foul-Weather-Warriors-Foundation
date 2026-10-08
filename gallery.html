@@ -32,7 +32,11 @@
     <span class="logo-text"><span>Foul Weather</span> <b>Warriors</b></span>
   </a>
   <div class="nav-right">
-    <a class="btn btn-primary" href="index.html#donate" data-donate>Donate</a>
+    <nav class="nav-links" aria-label="Primary">
+      <!-- <a href="gallery.html" aria-current="page">Meetups</a> -->   <!-- PARKED: see README -->
+      <a href="index.html#app">22-LIFE</a>
+    </nav>
+    <a class="btn btn-primary nav-donate" href="index.html#donate" data-donate>Donate</a>
     <button class="hamburger" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
       <span></span><span></span><span></span>
     </button>
@@ -50,11 +54,9 @@
 
   <nav class="drawer-links" aria-label="Main">
     <a href="index.html">Home</a>
-    <a href="index.html#different">What Makes Us Different</a>
-    <a href="gallery.html" aria-current="page">Meetup Photos</a>
+    <a data-apparel>Apparel</a>
+    <!-- <a href="gallery.html" aria-current="page">Meetup Photos</a> -->   <!-- PARKED: see README -->
     <a href="index.html#app">22-LIFE App</a>
-    <a href="index.html#partners">Partners</a>
-    <a href="index.html#donate">Donate</a>
   </nav>
 
   <div class="drawer-cta">
@@ -115,6 +117,22 @@
     <img id="lb-img" src="" alt="" />
     <figcaption id="lb-caption"></figcaption>
   </figure>
+</div>
+
+<!-- ============================ DONATION WINDOW ============================ -->
+<!-- Same window as the home page, so a Donate button works from here too. -->
+<div class="give-modal" id="give-modal" hidden>
+  <div class="give-modal-panel" role="dialog" aria-modal="true" aria-labelledby="give-modal-title">
+    <div class="give-modal-head">
+      <h2 class="give-modal-title" id="give-modal-title">Complete your donation</h2>
+      <button class="give-modal-close" id="give-modal-close" type="button" aria-label="Close donation window">&times;</button>
+    </div>
+    <p class="give-modal-recap" data-give-recap></p>
+    <div class="give-modal-frame" id="give-modal-frame"></div>
+    <p class="give-modal-foot">
+      <a href="#" data-donate-raw target="_blank" rel="noopener">Form not loading? Open it in a new tab.</a>
+    </p>
+  </div>
 </div>
 
 <script src="site-data.js"></script>

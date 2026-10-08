@@ -9,8 +9,11 @@
      3. Drawer menu
      4. Gallery (albums + lightbox)
      5. Lightbox
-     6. Partners
+     6. Partner and donor belt
      7. Setup checklist (only appears while TODOs remain)
+     8. Hero backdrop photo
+     9. Donation panel and donation window
+    10. Impact numbers
    ========================================================================== */
 (function () {
   'use strict';
@@ -82,6 +85,20 @@
       }
     });
 
+
+    // Apparel link. With no store yet it stays in the menu as a "Soon" item
+    // rather than a link to nowhere; filling in CONFIG.apparelUrl makes it live.
+    $$('[data-apparel]').forEach(function (el) {
+      if (isTodo(cfg.apparelUrl)) {
+        el.classList.add('is-soon');
+        el.setAttribute('aria-disabled', 'true');
+        el.insertAdjacentHTML('beforeend', '<span class="soon-tag">Soon</span>');
+        return;
+      }
+      el.setAttribute('href', cfg.apparelUrl);
+      el.setAttribute('target', '_blank');
+      el.setAttribute('rel', 'noopener');
+    });
 
     // EIN
     $$('[data-ein]').forEach(function (el) {
@@ -365,27 +382,385 @@
 
 
 
-  /* ------------------------------------------- 7c. Partners and donors */
+  /* ------------------------------------------- 7c. Partner and donor belt */
+
+  var PARTNER_TILE = 230;   // keep in step with .marquee-item width in styles.css
+
+  /**
+   * One tile. The second copy of the belt is decorative: it repeats logos a
+   * screen reader has already been given, so it carries no alt text and stays
+   * out of the tab order.
+   */
+  function partnerHTML(p, decorative) {
+    var name = esc(p.name || '');
+
+    var mark = p.logo
+      ? '<img class="partner-logo" src="images/partners/' + esc(p.logo) +
+        '" alt="' + (decorative ? '' : name) + '" loading="lazy" />'
+      : '<span class="partner-name">' + name + '</span>';
+
+    // A partner without a link simply has no link, rather than a dead one.
+    var inner = p.url
+      ? '<a href="' + esc(p.url) + '" target="_blank" rel="noopener"' +
+        (decorative ? ' tabindex="-1"' : '') + '>' + mark +
+        (decorative ? '' : '<span class="sr-only">' + name + ' (opens in a new tab)</span>') +
+        '</a>'
+      : mark;
+
+    return '<div class="marquee-item">' + inner + '</div>';
+  }
 
   function initPartners() {
-    var grid = document.getElementById('partners-grid');
-    if (!grid) return;
+    var track = $('[data-marquee-track]');
+    if (!track) return;
+    var belt = track.parentNode;
 
     if (!partners.length) {
-      grid.innerHTML = '<p class="empty-state">Partner and donor logos coming soon.</p>';
+      belt.innerHTML = '<p class="empty-state">Partner and donor logos coming soon.</p>';
       return;
     }
 
-    grid.innerHTML = partners.map(function (p) {
-      var name = esc(p.name || '');
-      var inner = p.logo
-        ? '<img src="images/partners/' + esc(p.logo) + '" alt="' + name + '" loading="lazy" />'
-        : name;
-      // A partner without a link is a plain block, not a dead anchor.
-      return p.url
-        ? '<a class="partner" href="' + esc(p.url) + '" target="_blank" rel="noopener">' + inner + '</a>'
-        : '<div class="partner">' + inner + '</div>';
+    function build() {
+      // One copy has to be at least as wide as the screen, or the belt shows a
+      // gap between the end of the list and the start of the repeat. With a
+      // short list that means cycling through it several times over, rounded
+      // up to whole passes so the sequence never breaks off mid-list.
+      var needed = Math.max(partners.length,
+                            Math.ceil(window.innerWidth / PARTNER_TILE) + 1);
+      var perCopy = Math.ceil(needed / partners.length) * partners.length;
+
+      var copy = [];
+      for (var i = 0; i < perCopy; i++) copy.push(partners[i % partners.length]);
+
+      function copyHTML(decorative) {
+        return '<div class="marquee-copy"' + (decorative ? ' aria-hidden="true"' : '') + '>' +
+               copy.map(function (p) { return partnerHTML(p, decorative); }).join('') +
+               '</div>';
+      }
+
+      // Two identical copies. The animation slides the track exactly half its
+      // own width, which lands copy 2 where copy 1 started — no visible seam.
+      track.innerHTML = copyHTML(false) + copyHTML(true);
+
+      // Same travel speed however many logos there are, so adding a partner
+      // lengthens the loop instead of speeding it up.
+      var PX_PER_SECOND = 45;
+      track.style.setProperty('--marquee-duration',
+        Math.round(perCopy * PARTNER_TILE / PX_PER_SECOND) + 's');
+
+      // A single logo has nothing to scroll past; centre it instead.
+      belt.classList.toggle('marquee--static', partners.length < 2);
+      return perCopy;
+    }
+
+    var built = build();
+
+    // Widening the window past the built width would open a gap in the loop,
+    // so rebuild — but only when more tiles are actually needed.
+    var timer;
+    window.addEventListener('resize', function () {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(function () {
+        if (Math.ceil(window.innerWidth / PARTNER_TILE) + 1 > built) built = build();
+      }, 200);
+    });
+  }
+
+
+  /* ------------------------------------------------- 8. Hero backdrop photo */
+
+  function initHeroImage() {
+    var bg = $('[data-hero-bg]');
+    if (!bg) return;
+    if (isTodo(cfg.heroImage)) return;          // storm gradient stays
+    bg.style.backgroundImage = 'url("' + String(cfg.heroImage).replace(/"/g, '%22') + '")';
+    bg.classList.add('has-photo');
+  }
+
+
+  /* --------------------------------------------- 9. Donation panel + window */
+
+  /**
+   * Zeffy serves the same form twice: a full page at /<locale>/donation-form/...
+   * and a stripped-down version at /embed/donation-form/... that is meant to be
+   * framed. Swap the locale segment for "embed" to get the second from the
+   * first. Anything that is not a Zeffy link has no known embed, so we return
+   * "" and the Donate buttons fall back to opening a new tab.
+   */
+  function embedUrlFor(url) {
+    if (!isTodo(cfg.zeffyEmbedUrl)) return cfg.zeffyEmbedUrl;
+    if (isTodo(url)) return '';
+    var m = String(url).match(/^(https:\/\/(?:www\.)?zeffy\.com)\/[a-z]{2}-[A-Z]{2}\/(.+)$/);
+    return m ? m[1] + '/embed/' + m[2] : '';
+  }
+
+  /** 1250 -> "$1,250"; 12.5 -> "$12.50" */
+  function money(n) {
+    var whole = Math.round(n) === n;
+    return '$' + n.toFixed(whole ? 0 : 2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  var give = {
+    freq: 'monthly',
+    amount: 0,
+    form: null,
+    embed: ''
+  };
+
+  function giveConfig() {
+    var d = (typeof DONATION === 'object' && DONATION) ? DONATION : {};
+    return {
+      pitch: d.pitch || '',
+      once: (d.once && d.once.presets && d.once.presets.length)
+              ? d.once : { presets: [250, 120, 55, 30, 25, 12], default: 55 },
+      monthly: (d.monthly && d.monthly.presets && d.monthly.presets.length)
+              ? d.monthly : { presets: [100, 50, 25, 22, 15, 10], default: 22 },
+      startOn: d.startOn === 'once' ? 'once' : 'monthly'
+    };
+  }
+
+  function initGive() {
+    give.embed = embedUrlFor(cfg.donateUrl);
+
+    var form = $('#give');
+    if (!form) return;                          // gallery.html has no panel
+    give.form = form;
+
+    var d       = giveConfig();
+    var tabs    = $$('.give-tab', form);
+    var amounts = $('[data-give-amounts]', form);
+    var input   = $('#give-amount');
+    var pitch   = $('[data-give-pitch]', form);
+    var cta     = $('[data-give-cta]', form);
+    var dedicate = $('#give-dedicate');
+    var dedication = $('#give-dedication');
+
+    if (pitch) {
+      if (d.pitch) pitch.textContent = d.pitch;
+      else pitch.remove();
+    }
+
+    /** Redraw the six buttons for whichever tab is showing. */
+    function renderAmounts() {
+      var set = d[give.freq];
+      amounts.innerHTML = set.presets.map(function (n) {
+        return '<button type="button" class="give-amount" data-amount="' + n + '"' +
+               ' aria-pressed="false">' + esc(money(n)) + '</button>';
+      }).join('');
+      markSelected();
+    }
+
+    /** Light up whichever preset matches the amount in the field, if any. */
+    function markSelected() {
+      $$('.give-amount', amounts).forEach(function (b) {
+        b.setAttribute('aria-pressed',
+          parseFloat(b.dataset.amount) === give.amount ? 'true' : 'false');
+      });
+    }
+
+    function updateCta() {
+      if (!cta) return;
+      var label = 'Donate';
+      if (give.amount > 0) label += ' ' + money(give.amount);
+      if (give.freq === 'monthly' && give.amount > 0) label += ' / month';
+      cta.textContent = label;
+    }
+
+    function setAmount(n, fromInput) {
+      give.amount = isFinite(n) && n > 0 ? n : 0;
+      if (!fromInput && input) input.value = give.amount ? String(give.amount) : '';
+      markSelected();
+      updateCta();
+    }
+
+    function setFreq(next) {
+      give.freq = next;
+      tabs.forEach(function (t) {
+        t.setAttribute('aria-selected', t.dataset.freq === next ? 'true' : 'false');
+      });
+      renderAmounts();
+      // A monthly default is a different number from the one-time default, so
+      // switching tabs re-seeds the amount rather than carrying one across.
+      setAmount(d[next]['default']);
+    }
+
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () { setFreq(t.dataset.freq); });
+    });
+
+    amounts.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.give-amount') : null;
+      if (!btn) return;
+      setAmount(parseFloat(btn.dataset.amount));
+    });
+
+    if (input) {
+      input.addEventListener('input', function () {
+        setAmount(parseFloat(input.value), true);
+      });
+    }
+
+    if (dedicate && dedication) {
+      dedicate.addEventListener('change', function () {
+        dedication.hidden = !dedicate.checked;
+        if (dedicate.checked) {
+          var field = $('#give-honoree');
+          if (field) field.focus();
+        }
+      });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      openGive();
+    });
+
+    setFreq(d.startOn);
+  }
+
+
+  /* --- the window that holds the real donation form --- */
+
+  var giveModal = {
+    root: null,
+    frame: null,
+    opener: null,
+    loaded: false,
+    hideTimer: 0
+  };
+
+  function giveRecapText() {
+    if (!give.form || !give.amount) return '';
+    var honoree = '';
+    var box = $('#give-dedicate');
+    var field = $('#give-honoree');
+    if (box && box.checked && field && field.value.trim()) {
+      honoree = ' in honor of <b>' + esc(field.value.trim()) + '</b>';
+    }
+    return 'You chose <b>' + esc(money(give.amount)) +
+           (give.freq === 'monthly' ? ' a month' : '') + '</b>' + honoree +
+           '. Enter it on the form below to confirm.';
+  }
+
+  function openGive(trigger) {
+    var root = giveModal.root;
+    if (!root) return false;
+
+    giveModal.opener = trigger || document.activeElement || null;
+
+    var recap = $('[data-give-recap]', root);
+    if (recap) recap.innerHTML = giveRecapText();
+
+    // The form is only fetched the first time somebody opens the window, so a
+    // visitor who never donates never pays for loading it.
+    if (!giveModal.loaded) {
+      var frame = document.createElement('iframe');
+      frame.src = give.embed;
+      frame.title = 'Donation form';
+      frame.setAttribute('loading', 'lazy');
+      frame.setAttribute('allow', 'payment');
+      frame.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+      giveModal.frame.appendChild(frame);
+      giveModal.loaded = true;
+    }
+
+    // Reopening during the closing fade would otherwise let that pending
+    // timeout hide the window again a moment later.
+    window.clearTimeout(giveModal.hideTimer);
+
+    root.hidden = false;
+    document.body.classList.add('nav-open');     // reuse the scroll lock
+    // Flush the pending style change so the panel is visible, and therefore
+    // focusable, before focus moves into it.
+    void root.offsetWidth;
+    root.classList.add('open');
+
+    var close = $('#give-modal-close');
+    if (close) close.focus();
+    return true;
+  }
+
+  function closeGive() {
+    var root = giveModal.root;
+    if (!root || root.hidden) return;
+    root.classList.remove('open');
+    document.body.classList.remove('nav-open');
+
+    // let the fade finish before the panel leaves the layout
+    giveModal.hideTimer = window.setTimeout(function () { root.hidden = true; }, 220);
+
+    if (giveModal.opener && giveModal.opener.focus) giveModal.opener.focus();
+    giveModal.opener = null;
+  }
+
+  function initGiveModal() {
+    var root = $('#give-modal');
+    if (!root) return;
+
+    giveModal.root  = root;
+    giveModal.frame = $('#give-modal-frame', root);
+
+    // A link we cannot frame is a link we should not intercept.
+    if (!give.embed) { root.remove(); giveModal.root = null; }
+
+    $$('[data-donate-raw]').forEach(function (a) {
+      if (isTodo(cfg.donateUrl)) { a.remove(); return; }
+      a.setAttribute('href', cfg.donateUrl);
+    });
+
+    if (!giveModal.root) return;
+
+    var close = $('#give-modal-close');
+    if (close) close.addEventListener('click', closeGive);
+
+    root.addEventListener('click', function (e) {
+      if (e.target === root) closeGive();        // backdrop only
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (giveModal.root.hidden) return;
+      if (e.key === 'Escape') { closeGive(); return; }
+
+      // Hold Tab on the window's own controls. The form inside the frame runs
+      // its own focus order once the pointer or Tab lands in it.
+      if (e.key !== 'Tab') return;
+      var items = $$('button, a[href]', giveModal.root)
+                    .filter(function (el) { return el.offsetParent !== null; });
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+
+    // Every Donate button on the site opens the window instead of navigating.
+    // The href stays put, so ctrl-click and middle-click still open a tab.
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-donate]') : null;
+      if (!btn) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      openGive(btn);
+    });
+  }
+
+
+  /* ------------------------------------------------- 10. Impact numbers */
+
+  function initImpact() {
+    var row = $('[data-impact]');
+    if (!row) return;
+    var stats = (typeof IMPACT === 'object' && IMPACT) ? IMPACT : [];
+    if (!stats.length) return;                   // band stays hidden
+
+    row.innerHTML = stats.map(function (s) {
+      return '<div class="stat">' +
+               '<span class="stat-figure">' + esc(s.figure || '') + '</span>' +
+               '<span class="stat-label">' + esc(s.label || '') + '</span>' +
+             '</div>';
     }).join('');
+
+    var band = row.closest ? row.closest('.impact-band') : null;
+    if (band) band.hidden = false;
   }
 
 
@@ -393,9 +768,13 @@
 
   function init() {
     applyConfig();
+    initHeroImage();
     initDrawer();
     initAlbums();
     initLightbox();
+    initGive();
+    initGiveModal();
+    initImpact();
     initPartners();
     initSetupChecklist();
   }

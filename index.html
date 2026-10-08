@@ -35,7 +35,13 @@
     <span class="logo-text"><span>Foul Weather</span> <b>Warriors</b></span>
   </a>
   <div class="nav-right">
-    <a class="btn btn-primary" href="#donate" data-donate>Donate</a>
+    <nav class="nav-links" aria-label="Primary">
+      <!-- PARKED: photo gallery. Uncomment this line and the one in the
+           drawer below once there are photos to show. See README. -->
+      <!-- <a href="gallery.html">Meetups</a> -->
+      <a href="#app">22-LIFE</a>
+    </nav>
+    <a class="btn btn-primary nav-donate" href="#donate" data-donate>Donate</a>
     <button class="hamburger" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">
       <span></span><span></span><span></span>
     </button>
@@ -53,11 +59,11 @@
 
   <nav class="drawer-links" aria-label="Main">
     <a href="index.html" aria-current="page">Home</a>
-    <a href="#different">What Makes Us Different</a>
-    <a href="gallery.html">Meetup Photos</a>
+    <!-- Becomes a real link once CONFIG.apparelUrl is filled in (site-data.js).
+         Until then it shows with a "Soon" tag. -->
+    <a data-apparel>Apparel</a>
+    <!-- <a href="gallery.html">Meetup Photos</a> -->   <!-- PARKED: see README -->
     <a href="#app">22-LIFE App</a>
-    <a href="#partners">Partners</a>
-    <a href="#donate">Donate</a>
   </nav>
 
   <div class="drawer-cta">
@@ -72,8 +78,66 @@
 <main id="main">
 
   <!-- ============================ HERO ============================ -->
-  <header class="hero">
+  <!-- The backdrop photo is set from CONFIG.heroImage in site-data.js.
+       Leave that empty and the storm gradient below shows through instead. -->
+  <header class="hero" id="top">
+    <div class="hero-bg" data-hero-bg aria-hidden="true"></div>
     <div class="hero-inner">
+
+      <!-- ---------- DONATION PANEL ---------- -->
+      <!-- The amounts come from DONATION in site-data.js. Picking one here
+           opens the real Zeffy form in a window on top of the page. -->
+      <form class="give" id="give" novalidate>
+        <h2 class="sr-only">Make a donation</h2>
+
+        <div class="give-tabs" role="tablist" aria-label="Donation frequency">
+          <button type="button" class="give-tab" role="tab" data-freq="once"
+                  id="give-tab-once" aria-selected="false" aria-controls="give-body">
+            One-time
+          </button>
+          <button type="button" class="give-tab" role="tab" data-freq="monthly"
+                  id="give-tab-monthly" aria-selected="false" aria-controls="give-body">
+            <svg class="give-heart" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9A5.3 5.3 0 0 1 12 6.3 5.3 5.3 0 0 1 21.6 12c-2.1 4.4-9.6 9-9.6 9z"/></svg>
+            Monthly
+          </button>
+        </div>
+
+        <div class="give-body" id="give-body" role="tabpanel">
+          <p class="give-pitch" data-give-pitch></p>
+
+          <div class="give-amounts" data-give-amounts role="group" aria-label="Suggested amounts"></div>
+
+          <div class="give-custom">
+            <span class="give-cur" aria-hidden="true">$</span>
+            <label class="sr-only" for="give-amount">Donation amount in US dollars</label>
+            <input class="give-input" id="give-amount" name="amount" type="number"
+                   inputmode="decimal" min="1" step="1" autocomplete="off" />
+            <span class="give-usd">USD</span>
+          </div>
+
+          <label class="give-check">
+            <input type="checkbox" id="give-dedicate" />
+            <span>Dedicate this donation</span>
+          </label>
+
+          <div class="give-dedication" id="give-dedication" hidden>
+            <label class="sr-only" for="give-honoree">Who is this donation in honor of?</label>
+            <input class="give-input give-input--text" id="give-honoree" type="text"
+                   maxlength="80" placeholder="In honor of&hellip;" autocomplete="off" />
+            <p class="give-hint">You&rsquo;ll be able to add this on the next screen.</p>
+          </div>
+
+          <button class="btn btn-primary btn-lg give-submit" type="submit">
+            <span data-give-cta>Donate</span>
+          </button>
+
+          <p class="give-note">
+            100% of your gift reaches the mission &mdash; our donation platform charges us nothing.
+          </p>
+        </div>
+      </form>
+
+      <!-- ---------- WORDMARK ---------- -->
       <div class="hero-copy">
         <h1 class="hero-wordmark">
           <span class="hw-top">Foul Weather</span>
@@ -87,17 +151,23 @@
           We fight veteran isolation through reconnection, community, and direct action.
           We bring veterans and service members back together.
         </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary btn-lg" href="#donate" data-donate>Donate</a>
-        </div>
       </div>
-      <div class="hero-visual hero-visual--logo">
-        <img src="images/logo.jpg" alt="Foul Weather Warriors Foundation emblem" width="760" height="760" loading="eager" />
-      </div>
+
     </div>
   </header>
 
 
+
+  <!-- ============================ IMPACT ============================ -->
+  <!-- Hidden until you add numbers to IMPACT in site-data.js. -->
+  <section class="band impact-band" id="impact" hidden>
+    <div class="wrap center">
+      <p class="eyebrow">Be their yes</p>
+      <h2 class="section-title">The mission by the numbers</h2>
+      <div class="stat-row" data-impact></div>
+      <a class="btn btn-primary btn-lg" href="#donate" data-donate>Donate</a>
+    </div>
+  </section>
 
   <!-- ============================ DONATE ============================ -->
   <section class="band band--tint donate-band" id="donate">
@@ -171,7 +241,15 @@
       <p class="section-intro">
         Our partners and donors help make the mission possible.
       </p>
-      <div id="partners-grid" class="partner-grid"></div>
+    </div>
+
+    <!-- Full-bleed logo belt. The strip scrolls on its own and pauses when
+         you point at it. Add or remove partners in site-data.js. -->
+    <div class="marquee" id="partners-marquee">
+      <div class="marquee-track" data-marquee-track></div>
+    </div>
+
+    <div class="wrap center">
       <p class="partners-thanks">Thank you for standing with FWWF.</p>
     </div>
   </section>
@@ -193,6 +271,23 @@
   </div>
 </footer>
 
+
+<!-- ============================ DONATION WINDOW ============================ -->
+<!-- The real donation form, loaded in place so nobody leaves the site.
+     It only loads once somebody actually opens it. -->
+<div class="give-modal" id="give-modal" hidden>
+  <div class="give-modal-panel" role="dialog" aria-modal="true" aria-labelledby="give-modal-title">
+    <div class="give-modal-head">
+      <h2 class="give-modal-title" id="give-modal-title">Complete your donation</h2>
+      <button class="give-modal-close" id="give-modal-close" type="button" aria-label="Close donation window">&times;</button>
+    </div>
+    <p class="give-modal-recap" data-give-recap></p>
+    <div class="give-modal-frame" id="give-modal-frame"></div>
+    <p class="give-modal-foot">
+      <a href="#" data-donate-raw target="_blank" rel="noopener">Form not loading? Open it in a new tab.</a>
+    </p>
+  </div>
+</div>
 
 <script src="site-data.js"></script>
 <script src="script.js"></script>

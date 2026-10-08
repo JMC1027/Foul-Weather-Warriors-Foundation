@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
+# PARKED: keeps search engines off the empty gallery page until it is in use.
+# Remove this line when the gallery comes back. See README.
+Disallow: /gallery.html
 
 # TODO: replace with your real domain once the site is live
 Sitemap: https://example.org/sitemap.xml
