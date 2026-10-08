@@ -228,7 +228,7 @@ takes ten seconds.
 
 ## Going live, step by step
 
-The code lives on GitHub at `JMC1027/Foul-Weather-Warriors-Foundation-`. Netlify
+The code lives on GitHub at `JMC1027/Foul-Weather-Warriors-Foundation`. Netlify
 watches that repository and republishes the site every time something is pushed
 to it. The domain is registered at Wix and only needs to be pointed at Netlify.
 
@@ -236,7 +236,7 @@ to it. The domain is registered at Wix and only needs to be pointed at Netlify.
 
 1. Go to <https://app.netlify.com> and sign up — **Sign up with GitHub** is easiest.
 2. **Add new site → Import an existing project → GitHub.**
-3. Choose the `Foul-Weather-Warriors-Foundation-` repository.
+3. Choose the `Foul-Weather-Warriors-Foundation` repository.
 4. Leave **Build command** empty and **Publish directory** empty. There is no build step.
 5. **Deploy.**
 
