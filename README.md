@@ -268,16 +268,16 @@ It usually takes 15–60 minutes for the domain to start working, occasionally
 longer. Once it does, Netlify issues a free SSL certificate on its own. A
 certificate warning in the first hour is normal — wait it out.
 
-### 3. Put the real domain into the files
+### 3. The domain inside the files — done
 
-Four spots still say `example.org` or use a relative path. Replace them with the
-real domain and push:
+`https://www.foulweatherwarriors.org` is already written into `robots.txt`,
+`sitemap.xml`, and the `canonical` / `og:url` / `og:image` tags in both pages.
+If the domain ever changes, those are the spots to update.
 
-- `robots.txt` — the `Sitemap:` line
-- `sitemap.xml` — every `<loc>`
-- `index.html` and `gallery.html` — the `og:image` meta tag must become a full URL
-  like `https://yourdomain.org/images/og-card.jpg`. Facebook ignores relative
-  paths, so until this is done shared links show no preview picture.
+The site uses the **www** form as its main address. In Netlify, under
+**Domain management**, make sure `www.foulweatherwarriors.org` is set as the
+**primary domain** so the bare `foulweatherwarriors.org` redirects to it rather
+than the other way round.
 
 ### 4. Get found on Google
 

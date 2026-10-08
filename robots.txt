@@ -4,5 +4,4 @@ Allow: /
 # Remove this line when the gallery comes back. See README.
 Disallow: /gallery.html
 
-# TODO: replace with your real domain once the site is live
-Sitemap: https://example.org/sitemap.xml
+Sitemap: https://www.foulweatherwarriors.org/sitemap.xml
